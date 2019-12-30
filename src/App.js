@@ -11,7 +11,7 @@ class SearchForm extends React.Component {
   }
 
   handleSubmit(event) {
-    alert('A name was submitted: ' + this.state.value);
+    // Just ignore submits
     event.preventDefault();
   }
 
@@ -49,30 +49,45 @@ class App extends Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
+  queryGoogle(query){
+    fetch("https://www.googleapis.com/books/v1/volumes?q=title:" + query)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({searchResults: result.items});
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        // (error) => {
+        //   this.setState({
+        //     isLoaded: true,
+        //     error
+        //   });
+        // }
+      )
+  }
+
   handleChange(event) {
     const query = event.target.value;
-    let searchResults = [];
-    if (query.length > 3) {
-      searchResults = [
-        {'title': 'Harry Potter', 'author': 'JK Rowling', 'description': 'A young wizard...'},
-        {'title': 'Harry Potter', 'author': 'JK Rowling', 'description': 'A young wizard...'},
-        {'title': 'Harry Potter', 'author': 'JK Rowling', 'description': 'A young wizard...'}
-      ]
-    }
     this.setState({
       'query': query,
-      'searchResults': searchResults,
+      'searchResults': [],
     })
+    if (query.length > 3) {
+      this.queryGoogle(query);
+    }
   }
 
   render() {
     const searchResults = this.state.searchResults;
+    console.log(searchResults);
     const renderedResults = searchResults.map((result, index) => {
       return (
-        <SearchResult key={index} 
-                      title={result.title}
-                      author={result.author}
-                      description={result.description}
+        <SearchResult key={result.id} 
+                      title={result.volumeInfo.title}
+                      author={result.volumeInfo.authors}
+                      description={result.volumeInfo.description}
         />
       )
     });
