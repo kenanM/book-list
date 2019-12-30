@@ -7,12 +7,7 @@ class SearchForm extends React.Component {
     super(props);
     this.state = {value: ''};
 
-    this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleChange(event) {
-    this.setState({value: event.target.value});
   }
 
   handleSubmit(event) {
@@ -23,7 +18,7 @@ class SearchForm extends React.Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <input type="text" value={this.state.value} onChange={this.handleChange} />
+        <input type="text" value={this.props.value} onChange={this.props.onChange} />
       </form>
     );
   }
@@ -47,13 +42,27 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      'query': 'Harry Potter',
-      'searchResults': [
+      'query': '',
+      'searchResults': [],
+    }
+
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(event) {
+    const query = event.target.value;
+    let searchResults = [];
+    if (query.length > 3) {
+      searchResults = [
         {'title': 'Harry Potter', 'author': 'JK Rowling', 'description': 'A young wizard...'},
         {'title': 'Harry Potter', 'author': 'JK Rowling', 'description': 'A young wizard...'},
         {'title': 'Harry Potter', 'author': 'JK Rowling', 'description': 'A young wizard...'}
-      ],
+      ]
     }
+    this.setState({
+      'query': query,
+      'searchResults': searchResults,
+    })
   }
 
   render() {
@@ -71,9 +80,9 @@ class App extends Component {
       <div className="App">
         <div className="App-header">
           <h2>Book List</h2>
-          <SearchForm />
+          <SearchForm value={this.state.query} onChange={this.handleChange}/>
         </div>
-        <div class="container" style={{marginTop: 15}}>
+        <div className="container" style={{marginTop: 15}}>
           {renderedResults}
         </div>
       </div>
