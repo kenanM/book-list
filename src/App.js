@@ -24,6 +24,18 @@ class SearchForm extends React.Component {
   }
 }
 
+function Alert(props) {
+  if (!props.message) {
+    // If there is no message there should be no alert
+    return null
+  }
+  return (
+    <div className={"alert alert-" + (props.type || 'primary')} role="alert">
+      {props.message}
+    </div>
+  )
+}
+
 function SearchResult(props) {
   return (
     <div className="card border-dark mb-3">
@@ -44,6 +56,7 @@ class App extends Component {
     this.state = {
       'query': '',
       'searchResults': [],
+      'message': '',
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -54,7 +67,29 @@ class App extends Component {
       .then(res => res.json())
       .then(
         (result) => {
-          this.setState({searchResults: result.items});
+          let searchResults = []
+          let message = ''
+          let messageColor = ''
+          if (result.error){
+            console.log(result.error);
+            message = result.error.message;
+            messageColor = 'warning';
+          } else if (result.totalItems === 0){
+            message = 'No Results Found';
+            messageColor = 'danger';
+          } else {
+            message = 'Found ' + result.totalItems + ' results.'
+            messageColor = 'primary';
+            console.log(result.items);
+            console.log(result);
+            searchResults = result.items;
+          }
+
+          this.setState({
+            'searchResults': searchResults,
+            'message': message,
+            'messageColor': messageColor,
+          });
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow
@@ -70,21 +105,23 @@ class App extends Component {
 
   handleChange(event) {
     const query = event.target.value;
-    this.setState({
-      'query': query,
-      'searchResults': [],
-    })
+    let message = '';
     if (query.length > 3) {
       this.queryGoogle(query);
+      message = 'Loading...';
     }
+    this.setState({
+      'query': query,
+      'message': message,
+      'searchResults': [],
+    })
   }
 
   render() {
     const searchResults = this.state.searchResults;
-    console.log(searchResults);
     const renderedResults = searchResults.map((result, index) => {
       return (
-        <SearchResult key={result.id} 
+        <SearchResult key={index}
                       title={result.volumeInfo.title}
                       author={result.volumeInfo.authors}
                       description={result.volumeInfo.description}
@@ -98,6 +135,7 @@ class App extends Component {
           <SearchForm value={this.state.query} onChange={this.handleChange}/>
         </div>
         <div className="container" style={{marginTop: 15}}>
+          <Alert message={this.state.message} type={this.state.messageColor} />
           {renderedResults}
         </div>
       </div>
