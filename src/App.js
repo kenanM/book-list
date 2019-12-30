@@ -36,18 +36,71 @@ function Alert(props) {
   )
 }
 
-function SearchResult(props) {
-  return (
-    <div className="card border-dark mb-3">
-      <div className="card-body">
-        <div className="card-title"> <h3> {props.title} </h3></div>
-        <div className="card-subtitle"> {props.author} </div>
-        <p className="card-text">{props.description}</p>
-      </div>
-    </div>
-  )
-}
+class SearchResult extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      'favourite': window.localStorage.getItem(props.id),
+    }
 
+    this.addToFavourites = this.addToFavourites.bind(this);
+    this.removeFromFavourites = this.removeFromFavourites.bind(this);
+    this.getFavouritesList = this.getFavouritesList.bind(this);
+    this.saveFavouritesList = this.saveFavouritesList.bind(this);
+  }
+
+  getFavouritesList() {
+    const favourites = window.localStorage.getItem('favourites') || '[]';
+    console.log(favourites);
+    return JSON.parse(favourites);
+  }
+
+  saveFavouritesList(anArray) {
+    let asString = JSON.stringify(anArray);
+    window.localStorage.setItem('favourites', asString);
+  }
+
+  addToFavourites(event) {
+    event.preventDefault()
+    // Add SearchResult's ID to a list of "favourites"
+    let favourites = this.getFavouritesList()
+    favourites.push(this.props.id);
+    this.saveFavouritesList(favourites);
+    // Store a copy of the props using this objects ID as a key in localStorage
+    window.localStorage.setItem(this.props.id, JSON.stringify(this.props));
+
+    this.setState({'favourite': true});
+  }
+
+  removeFromFavourites(event) {
+    event.preventDefault()
+    // Remove this SearchResult's ID from the list of "favourites"
+    let favourites = this.getFavouritesList();
+    favourites.pop(this.props.id);
+    this.saveFavouritesList(favourites);
+    // Remove the details about this search result from localStorage
+    window.localStorage.removeItem(this.props.id);
+
+    this.setState({'favourite': false});
+  }
+
+  render() {
+    return (
+      <div className="card border-dark mb-3">
+        <div className="card-body">
+          <div className="card-title"> <h3> {this.props.title} </h3></div>
+          <div className="card-subtitle"> {this.props.author} </div>
+          <p className="card-text">{this.props.description}</p>
+          <a className="card-link float-right"
+             href="#"
+             onClick={this.state.favourite ? this.removeFromFavourites : this.addToFavourites}>
+            {this.state.favourite ? "🗑 Remove from Favourites" : "⭐ Add to Favourites" }
+          </a>
+        </div>
+      </div>
+    )
+  }
+}
 
 class App extends Component {
 
@@ -125,6 +178,7 @@ class App extends Component {
                       title={result.volumeInfo.title}
                       author={result.volumeInfo.authors}
                       description={result.volumeInfo.description}
+                      id={result.id}  // This is just an arbitrary ID that Google provide
         />
       )
     });
