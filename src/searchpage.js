@@ -10,20 +10,15 @@ class SearchForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {value: ''};
-
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleSubmit(event) {
-    // Just ignore submits
-    event.preventDefault();
   }
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <input type="text" value={this.props.value} onChange={this.props.onChange} />
-      </form>
+      <div className="row">
+        <div className="col-lg-12">
+          <input type="text" placeholder="Search for books by title" value={this.props.value} onChange={this.props.onChange} className="form-control input-lg"/>
+        </div>
+      </div>
     );
   }
 }
