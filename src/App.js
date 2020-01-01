@@ -191,6 +191,7 @@ class SearchPage extends Component {
     return (
       <div>
         <SearchForm value={this.state.query} onChange={this.handleChange}/>
+        <br></br>
         <Alert message={this.state.message} type={this.state.messageColor} />
         {renderedResults}
       </div>
@@ -210,26 +211,21 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <nav className="navbar navbar-expand-sm navbar-light bg-light">
           <a className="navbar-brand" href="#">Books</a>
-          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div className="navbar-nav">
-              <NavLink exact
-                       to="/x"
-                       className="nav-item nav-link"
-                       activeClassName="active">
-                Search
-              </NavLink>
-              <NavLink exact
-                       to="/favourites"
-                       className="nav-item nav-link"
-                       activeClassName="active">
-                Favourites
-              </NavLink>
-            </div>
+          <div className="navbar-nav">
+            <NavLink exact
+                           to="/"
+                           className="nav-item nav-link"
+                           activeClassName="active">
+                    Search
+                  </NavLink>
+            <NavLink exact
+                     to="/favourites"
+                     className="nav-item nav-link"
+                     activeClassName="active">
+              Favourites
+            </NavLink>
           </div>
         </nav>
         <div className="container" style={{marginTop: 15}}>
@@ -237,7 +233,7 @@ class App extends Component {
             <Route path="/favourites">
               <FavouritesPage />
             </Route>
-            <Route path="/x">
+            <Route path="/">
               <SearchPage />
             </Route>
           </Switch>
