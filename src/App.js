@@ -258,13 +258,13 @@ class App extends Component {
             <NavLink exact
                            to="/"
                            className="nav-item nav-link"
-                           activeClassName="active">
+                           activeClassName="disabled">
                     Search
                   </NavLink>
             <NavLink exact
                      to="/favourites"
                      className="nav-item nav-link"
-                     activeClassName="active">
+                     activeClassName="disabled">
               Favourites
             </NavLink>
           </div>
