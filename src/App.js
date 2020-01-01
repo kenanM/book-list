@@ -1,4 +1,10 @@
 import React, { Component } from 'react';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  NavLink
+} from "react-router-dom";
 import './App.css';
 
 
@@ -102,7 +108,7 @@ class SearchResult extends React.Component {
   }
 }
 
-class App extends Component {
+class SearchPage extends Component {
 
   constructor(props) {
     super(props);
@@ -183,18 +189,63 @@ class App extends Component {
       )
     });
     return (
-      <div className="App">
-        <div className="App-header">
-          <h2>Book List</h2>
-          <SearchForm value={this.state.query} onChange={this.handleChange}/>
-        </div>
-        <div className="container" style={{marginTop: 15}}>
-          <Alert message={this.state.message} type={this.state.messageColor} />
-          {renderedResults}
-        </div>
+      <div>
+        <SearchForm value={this.state.query} onChange={this.handleChange}/>
+        <Alert message={this.state.message} type={this.state.messageColor} />
+        {renderedResults}
       </div>
     );
   }
 }
+
+
+class FavouritesPage extends Component {
+  render() {
+    return <span> Faves </span>
+  }
+}
+
+
+class App extends Component {
+  render() {
+    return (
+      <Router>
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+          <a className="navbar-brand" href="#">Books</a>
+          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div className="navbar-nav">
+              <NavLink exact
+                       to="/x"
+                       className="nav-item nav-link"
+                       activeClassName="active">
+                Search
+              </NavLink>
+              <NavLink exact
+                       to="/favourites"
+                       className="nav-item nav-link"
+                       activeClassName="active">
+                Favourites
+              </NavLink>
+            </div>
+          </div>
+        </nav>
+        <div className="container" style={{marginTop: 15}}>
+          <Switch>
+            <Route path="/favourites">
+              <FavouritesPage />
+            </Route>
+            <Route path="/x">
+              <SearchPage />
+            </Route>
+          </Switch>
+        </div>
+      </Router>
+    )
+  }
+}
+
 
 export default App;
