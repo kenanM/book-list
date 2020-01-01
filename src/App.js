@@ -8,6 +8,25 @@ import {
 import './App.css';
 
 
+function removeFromArray(array, value) {
+  const index = array.indexOf(value);
+  if (index > -1) {
+    array.splice(index, 1);
+  }
+  return array;
+}
+
+function getFavouritesList() {
+  const favourites = window.localStorage.getItem('favourites') || '[]';
+  return JSON.parse(favourites);
+}
+
+function saveFavouritesList(anArray) {
+  let asString = JSON.stringify(anArray);
+  window.localStorage.setItem('favourites', asString);
+}
+
+
 class SearchForm extends React.Component {
   constructor(props) {
     super(props);
@@ -51,27 +70,14 @@ class SearchResult extends React.Component {
 
     this.addToFavourites = this.addToFavourites.bind(this);
     this.removeFromFavourites = this.removeFromFavourites.bind(this);
-    this.getFavouritesList = this.getFavouritesList.bind(this);
-    this.saveFavouritesList = this.saveFavouritesList.bind(this);
-  }
-
-  getFavouritesList() {
-    const favourites = window.localStorage.getItem('favourites') || '[]';
-    console.log(favourites);
-    return JSON.parse(favourites);
-  }
-
-  saveFavouritesList(anArray) {
-    let asString = JSON.stringify(anArray);
-    window.localStorage.setItem('favourites', asString);
   }
 
   addToFavourites(event) {
     event.preventDefault()
     // Add SearchResult's ID to a list of "favourites"
-    let favourites = this.getFavouritesList()
+    let favourites = getFavouritesList()
     favourites.push(this.props.id);
-    this.saveFavouritesList(favourites);
+    saveFavouritesList(favourites);
     // Store a copy of the props using this objects ID as a key in localStorage
     window.localStorage.setItem(this.props.id, JSON.stringify(this.props));
 
@@ -81,9 +87,9 @@ class SearchResult extends React.Component {
   removeFromFavourites(event) {
     event.preventDefault()
     // Remove this SearchResult's ID from the list of "favourites"
-    let favourites = this.getFavouritesList();
-    favourites.pop(this.props.id);
-    this.saveFavouritesList(favourites);
+    let favourites = getFavouritesList();
+    favourites = removeFromArray(favourites, this.props.id);
+    saveFavouritesList(favourites);
     // Remove the details about this search result from localStorage
     window.localStorage.removeItem(this.props.id);
 
@@ -201,8 +207,27 @@ class SearchPage extends Component {
 
 
 class FavouritesPage extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      'favourites': getFavouritesList()
+    }
+  }
+
   render() {
-    return <span> Faves </span>
+    const favourites = this.state.favourites.map((favouriteId, index) => {
+      const fromLocalStorage = JSON.parse(window.localStorage.getItem(favouriteId));
+      if (!fromLocalStorage) {
+        return <Alert key={favouriteId} message={'Unable to load Book from LocalStorage'} type='danger' />
+      }
+      return <SearchResult key={favouriteId}
+                           title={fromLocalStorage.title}
+                           author={fromLocalStorage.author}
+                           description={fromLocalStorage.description}
+                           id={favouriteId} />
+    });
+    return <div> {favourites} </div>
   }
 }
 
