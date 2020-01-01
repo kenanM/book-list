@@ -94,6 +94,11 @@ class SearchResult extends React.Component {
     window.localStorage.removeItem(this.props.id);
 
     this.setState({'favourite': false});
+
+    // The Favourites page specifies a callback to update the page when something is removed
+    if (this.props.onRemoveFromFavourites) {
+      this.props.onRemoveFromFavourites();
+    }
   }
 
   render() {
@@ -213,6 +218,12 @@ class FavouritesPage extends Component {
     this.state = {
       'favourites': getFavouritesList()
     }
+
+    this.refreshFavouritesList = this.refreshFavouritesList.bind(this);
+  }
+
+  refreshFavouritesList() {
+    this.setState({'favourites': getFavouritesList()});
   }
 
   render() {
@@ -225,6 +236,7 @@ class FavouritesPage extends Component {
                            title={fromLocalStorage.title}
                            author={fromLocalStorage.author}
                            description={fromLocalStorage.description}
+                           onRemoveFromFavourites={this.refreshFavouritesList}
                            id={favouriteId} />
     });
     return <div> {favourites} </div>
