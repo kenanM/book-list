@@ -239,7 +239,11 @@ class FavouritesPage extends Component {
                            onRemoveFromFavourites={this.refreshFavouritesList}
                            id={favouriteId} />
     });
-    return <div> {favourites} </div>
+    if (favourites.length > 0) {
+      return <div> {favourites} </div>
+    } else {
+      return <Alert message='No Books have been added to your favourites list. Try searching for one to add!' />
+    }
   }
 }
 
